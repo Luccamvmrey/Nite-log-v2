@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {Html5QrcodeScanner} from "html5-qrcode";
 import useMutateUser from "@/modules/common/hooks/user/useMutateUser.ts";
 import useQueryUser from "@/modules/common/hooks/user/useQueryUser.ts";
@@ -7,21 +7,7 @@ const QrCodeScanner = () => {
     const {addToAttendanceMutation} = useMutateUser();
     const {userQuery} = useQueryUser();
 
-    const [qrResult, setQrResult] = useState("");
     const qrcodeRegionId = "html5qr-code-full-region";
-
-    useEffect(() => {
-        if (!qrResult) return;
-        if (userQuery.data) {
-            const {data: user} = userQuery.data;
-            const meetingCode = Number(qrResult);
-
-            addToAttendanceMutation.mutate({
-                userId: user.id,
-                meetingCode
-            });
-        }
-    }, [qrResult]);
 
     useEffect(() => {
         const qrCodeScanner = new Html5QrcodeScanner(
@@ -34,15 +20,23 @@ const QrCodeScanner = () => {
             try {
                 await navigator.mediaDevices.getUserMedia({video: true});
             } catch (error) {
-                console.log(error);
+                console.error(error);
             }
         }
 
         const initializeScanner = () => {
             const onSuccess = (decodedText: string) => {
-                setQrResult(decodedText);
-            }
+                if (!decodedText) return;
+                if (userQuery.data) {
+                    const {data: user} = userQuery.data;
+                    const meetingCode = Number(decodedText);
 
+                    addToAttendanceMutation.mutate({
+                        userId: user.id,
+                        meetingCode
+                    })
+                }
+            }
             const onError = (err: string) => {
                 console.warn(err);
             }
