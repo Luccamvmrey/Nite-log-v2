@@ -74,12 +74,23 @@
     }
 }
 
-body, html, #root {
+#html5-qrcode-button-camera-permission {
+    border: 5px solid white;
+    border-radius: 4px;
+    border-color: white;
+    padding: 5px;
+    margin: 8px;
+}
+
+body,
+html,
+#root {
     height: 100%;
     width: 100%;
 }
 
-body, #root {
+body,
+#root {
     display: flex;
     flex-direction: column;
     justify-content: center;
